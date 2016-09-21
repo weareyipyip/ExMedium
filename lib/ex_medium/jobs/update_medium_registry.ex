@@ -2,12 +2,12 @@ defmodule ExMedium.Jobs.UpdateMediumRegistry do
   require Logger
 
 	@moduledoc """
-  	Provides a method to update the `Medium.MediumUtil.MediumRegistry` state
+  	Provides a method to update the `ExMedium.MediumUtil.MediumRegistry` state
 	"""
 
 	@doc """
-  	used by `quantum` to update `Medium.MediumUtil.MediumRegistry/1` \n
-	Uses `Medium.MediumUtil.RequestHandler.updateArticles/0`. \n
+  	used by `quantum` to update `ExMedium.MediumUtil.MediumRegistry/1` \n
+	Uses `ExMedium.MediumUtil.RequestHandler.updateArticles/0`. \n
 
 	Returns: `:ok`
   	"""

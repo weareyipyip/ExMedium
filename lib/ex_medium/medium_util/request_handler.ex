@@ -2,14 +2,14 @@ defmodule ExMedium.MediumUtil.RequestHandler do
 	require Logger
 
 	@moduledoc """
-  	Provides a methods to load the get the medium api data, process it and update the state of the `Medium.MediumUtil.MediumRegistry`
+  	Provides a methods to load the get the medium api data, process it and update the state of the `ExMedium.MediumUtil.MediumRegistry`
 
   	"""
 	@yipyipMediumUrl Application.get_env(:ex_medium, :medium_url)
 
 	@doc """
 	HTTPoisen to get Medium Api XML. \n
-	If response `:ok` Returns `{:ok, response}` uses `Medium.MediumUtil.RequestHandler.process_response/1` to process response data. \n
+	If response `:ok` Returns `{:ok, response}` uses `ExMedium.MediumUtil.RequestHandler.process_response/1` to process response data. \n
 	If response `:error` Returns: `{:error, :nil}`.
 
   	"""
@@ -28,25 +28,25 @@ defmodule ExMedium.MediumUtil.RequestHandler do
 
 	## Examples
 
-		iex> Medium.MediumUtil.RequestHandler.process_response(%{body: "<node>text</node>"})
+		iex> ExMedium.MediumUtil.RequestHandler.process_response(%{body: "<node>text</node>"})
 		{:error, nil}
 
-		iex> Medium.MediumUtil.RequestHandler.process_response(%{body: "This is text"})
+		iex> ExMedium.MediumUtil.RequestHandler.process_response(%{body: "This is text"})
 		{:error, nil}
 
-		iex> Medium.MediumUtil.RequestHandler.process_response(%{somethingElse: "This is text"})
+		iex> ExMedium.MediumUtil.RequestHandler.process_response(%{somethingElse: "This is text"})
 		{:error, nil}
 
-		iex> Medium.MediumUtil.RequestHandler.process_response(%{})
+		iex> ExMedium.MediumUtil.RequestHandler.process_response(%{})
 		{:error, nil}
 
-		iex> Medium.MediumUtil.RequestHandler.process_response("not a map")
+		iex> ExMedium.MediumUtil.RequestHandler.process_response("not a map")
 		{:error, nil}
 
-		iex> Medium.MediumUtil.RequestHandler.process_response(%{body: "<body><item><title>This is a title</title><link>This is a link</link></item><item><title>This is a title 2</title><link>This is a link2</link></item></body>"})
+		iex> ExMedium.MediumUtil.RequestHandler.process_response(%{body: "<body><item><title>This is a title</title><link>This is a link</link></item><item><title>This is a title 2</title><link>This is a link2</link></item></body>"})
 		{:ok, %{1 => %{link: "This is a link", title: "This is a title"}, 2 => %{link: "This is a link2", title: "This is a title 2"}}}
 
-		iex> Medium.MediumUtil.RequestHandler.process_response(%{body: "<item><title>This is a title</title></item>"})
+		iex> ExMedium.MediumUtil.RequestHandler.process_response(%{body: "<item><title>This is a title</title></item>"})
 		{:ok, %{1 => %{link: nil, title: "This is a title"}}}
 		
   	"""
@@ -71,7 +71,7 @@ defmodule ExMedium.MediumUtil.RequestHandler do
 	end
 
 	@doc """
-	Updates articles in `Medium.MediumUtil.MediumRegistry` through `Medium.MediumUtil.MediumRegistry.updateMediumArticles/1`. \n
+	Updates articles in `ExMedium.MediumUtil.MediumRegistry` through `ExMedium.MediumUtil.MediumRegistry.updateMediumArticles/1`. \n
 	If `:ok` updates the articles
 	if `:error` keeps the old data \n
 	Returns: `:ok` or logs warning  \n

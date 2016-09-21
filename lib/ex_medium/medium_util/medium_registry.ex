@@ -6,7 +6,7 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 
 	## Client API
 	@doc """
-	Starts the registry with the given `name` (we use module name: `Medium.MediumUtil.MediumRegistry`)
+	Starts the registry with the given `name` (we use module name: `ExMedium.MediumUtil.MediumRegistry`)
 	"""
 	def start_link(name) do
 		GenServer.start_link(__MODULE__, :ok, name: name)
@@ -40,7 +40,7 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 
 	@doc """
 	initialises registry
-	sets initial state using `Medium.MediumUtil.RequestHandler.getYipyipMedium/0'
+	sets initial state using `ExMedium.MediumUtil.RequestHandler.getYipyipMedium/0'
 	"""
 	def init(:ok) do
 		mediumData = ExMedium.MediumUtil.RequestHandler.getYipyipMedium
@@ -48,7 +48,7 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 	end
 
 	@doc """
-	handles `Medium.MediumUtil.MediumRegistry.lookupMediumArticles/0`
+	handles `Medium.MediumUtil.ExMediumRegistry.lookupMediumArticles/0`
 	if `:ok` Returns: 'response': map of articles
 	if `:error Returns: '%{}'
 	"""
@@ -63,7 +63,7 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 	end
 
 	@doc """
-	casts `Medium.MediumUtil.MediumRegistry.updateMediumArticles/1`
+	casts `ExMedium.MediumUtil.MediumRegistry.updateMediumArticles/1`
 	updates state with new given `articles`
 	"""
 	def handle_cast({:updateMediumArticles, articles}, mediumData) do

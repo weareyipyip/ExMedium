@@ -8,8 +8,8 @@ defmodule ExMedium do
 
     # Define workers and child supervisors to be supervised
     children = [
-      # Starts a worker by calling: Medium.Worker.start_link(arg1, arg2, arg3)
-      # worker(Medium.Worker, [arg1, arg2, arg3]),
+      # Starts a worker by calling: ExMedium.Worker.start_link(arg1, arg2, arg3)
+      # worker(ExMedium.Worker, [arg1, arg2, arg3]),
       worker(ExMedium.MediumUtil.MediumRegistry, [ExMedium.MediumUtil.MediumRegistry]),
     ]
 

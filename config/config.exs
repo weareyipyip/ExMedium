@@ -17,7 +17,7 @@ config :ex_medium,
 	root: Path.dirname(__DIR__)
 # And access this configuration in your application as:
 #
-#     Application.get_env(:medium, :key)
+#     Application.get_env(:ex_medium, :key)
 #
 
 # Configures Elixir's Logger
