@@ -1,11 +1,10 @@
 {application,medium,
              [{registered,[]},
               {description,"medium"},
-              {vsn,"0.1.0"},
+              {vsn,"0.1.1"},
               {modules,['Elixir.Medium',
                         'Elixir.Medium.Jobs.UpdateMediumRegistry',
                         'Elixir.Medium.MediumUtil.MediumRegistry',
                         'Elixir.Medium.MediumUtil.RequestHandler']},
               {mod,{'Elixir.Medium',[]}},
-              {applications,[kernel,stdlib,elixir,cowboy,logger,gettext,timex,
-                             httpoison,quantum]}]}.
+              {applications,[kernel,stdlib,elixir,logger,httpoison,quantum]}]}.

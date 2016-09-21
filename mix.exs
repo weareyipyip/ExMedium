@@ -15,8 +15,7 @@ defmodule Medium.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [mod: {Medium, []},
-     applications: [:cowboy, :logger, :gettext,
-                    :timex, :httpoison, :quantum]]
+     applications: [:logger, :httpoison, :quantum]]
   end
 
   # Dependencies can be Hex packages:
@@ -29,9 +28,7 @@ defmodule Medium.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:gettext, "~> 0.9"},
-     {:timex, "~> 2.1"},
-     {:cowboy, "~> 1.0"},
+    [
      {:httpoison, "~> 0.9.0"},
      {:exml, "~> 0.1.0"},
      {:quantum, "~> 1.7"},
