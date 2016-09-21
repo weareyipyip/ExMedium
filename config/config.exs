@@ -12,7 +12,7 @@ use Mix.Config
 #
 #     config :medium, key: :value
 #
-config :medium, 
+config :ex_medium, 
 	medium_url: "https://medium.com/feed/we-are-yipyip",
 	root: Path.dirname(__DIR__)
 # And access this configuration in your application as:
@@ -28,7 +28,7 @@ config :logger, :console,
 config :quantum, cron: [
   update_medium_registry: [
     schedule: "*/1 * * * *",
-    task: {Medium.Jobs.UpdateMediumRegistry, :run},
+    task: {ExMedium.Jobs.UpdateMediumRegistry, :run},
     overlap: false
   ]
 ]

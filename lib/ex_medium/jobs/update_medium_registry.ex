@@ -1,4 +1,4 @@
-defmodule Medium.Jobs.UpdateMediumRegistry do
+defmodule ExMedium.Jobs.UpdateMediumRegistry do
   require Logger
 
 	@moduledoc """
@@ -13,6 +13,6 @@ defmodule Medium.Jobs.UpdateMediumRegistry do
   	"""
   def run do
     Logger.info("Running UpdateMediumRegistry Job")
-    Medium.MediumUtil.RequestHandler.updateArticles
+    ExMedium.MediumUtil.RequestHandler.updateArticles
   end
 end

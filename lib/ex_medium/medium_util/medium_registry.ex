@@ -1,4 +1,4 @@
-defmodule Medium.MediumUtil.MediumRegistry do
+defmodule ExMedium.MediumUtil.MediumRegistry do
 	use GenServer
 	@moduledoc """
   	`Genserver` module, starts registry, keeps state, updates state, lookup state
@@ -18,7 +18,7 @@ defmodule Medium.MediumUtil.MediumRegistry do
 	One article buildup: '%{title: "the title", link: "the link"}`.
 	"""
 	def lookupMediumArticles() do
-		GenServer.call(Medium.MediumUtil.MediumRegistry, :lookupMediumArticles)
+		GenServer.call(ExMedium.MediumUtil.MediumRegistry, :lookupMediumArticles)
 	end
 
 	@doc """
@@ -26,14 +26,14 @@ defmodule Medium.MediumUtil.MediumRegistry do
 	Returns: `:ok`.
 	"""
 	def updateMediumArticles(articles) do
-		GenServer.cast(Medium.MediumUtil.MediumRegistry, {:updateMediumArticles, articles})
+		GenServer.cast(ExMedium.MediumUtil.MediumRegistry, {:updateMediumArticles, articles})
 	end
 
 	@doc """
 	stops the registry
 	"""
 	def stop() do
-    	GenServer.stop(Medium.MediumUtil.MediumRegistry)
+    	GenServer.stop(ExMedium.MediumUtil.MediumRegistry)
   	end
 
 	## Server Callbacks
@@ -43,7 +43,7 @@ defmodule Medium.MediumUtil.MediumRegistry do
 	sets initial state using `Medium.MediumUtil.RequestHandler.getYipyipMedium/0'
 	"""
 	def init(:ok) do
-		mediumData = Medium.MediumUtil.RequestHandler.getYipyipMedium
+		mediumData = ExMedium.MediumUtil.RequestHandler.getYipyipMedium
 		{:ok, mediumData}
 	end
 
@@ -55,7 +55,7 @@ defmodule Medium.MediumUtil.MediumRegistry do
 	def handle_call(:lookupMediumArticles, _from, mediumData) do
 		case mediumData do
 			{:ok, response} -> {:reply, response, {:ok, response}}
-			{:error, nil} -> case Medium.MediumUtil.RequestHandler.getYipyipMedium do
+			{:error, nil} -> case ExMedium.MediumUtil.RequestHandler.getYipyipMedium do
 								{:ok, response} -> {:reply, response, {:ok, response}}
 								{:error, _} -> {:reply, %{}, {:error, nil}}
 							 end

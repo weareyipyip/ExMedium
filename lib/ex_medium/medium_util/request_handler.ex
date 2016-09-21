@@ -1,11 +1,11 @@
-defmodule Medium.MediumUtil.RequestHandler do
+defmodule ExMedium.MediumUtil.RequestHandler do
 	require Logger
 
 	@moduledoc """
   	Provides a methods to load the get the medium api data, process it and update the state of the `Medium.MediumUtil.MediumRegistry`
 
   	"""
-	@yipyipMediumUrl Application.get_env(:medium, :medium_url)
+	@yipyipMediumUrl Application.get_env(:ex_medium, :medium_url)
 
 	@doc """
 	HTTPoisen to get Medium Api XML. \n
@@ -78,7 +78,7 @@ defmodule Medium.MediumUtil.RequestHandler do
   	"""
 	def updateArticles do
 		case getYipyipMedium do
-			{:ok, response} -> Medium.MediumUtil.MediumRegistry.updateMediumArticles({:ok, response})
+			{:ok, response} -> ExMedium.MediumUtil.MediumRegistry.updateMediumArticles({:ok, response})
 			{:error, nil} -> Logger.warn("Error retrieving new data, leaving old data in place")
 		end
 	end

@@ -1,4 +1,4 @@
-defmodule Medium.MediumUtil.RequestHandlerTest do
+defmodule ExMedium.MediumUtil.RequestHandlerTest do
   use ExUnit.Case, async: true
-  doctest Medium.MediumUtil.RequestHandler
+  doctest ExMedium.MediumUtil.RequestHandler
 end

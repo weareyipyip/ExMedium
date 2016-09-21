@@ -1,8 +1,8 @@
-defmodule Medium.Mixfile do
+defmodule ExMedium.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :medium,
+    [app: :ex_medium,
      version: "0.1.1",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
@@ -14,7 +14,7 @@ defmodule Medium.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [mod: {Medium, []},
+    [mod: {ExMedium, []},
      applications: [:logger, :httpoison, :quantum]]
   end
 

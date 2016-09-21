@@ -1,0 +1,10 @@
+{application,ex_medium,
+             [{registered,[]},
+              {description,"ex_medium"},
+              {vsn,"0.1.1"},
+              {modules,['Elixir.EXMedium',
+                        'Elixir.Ex.Medium.Jobs.UpdateMediumRegistry',
+                        'Elixir.ExMedium.MediumUtil.MediumRegistry',
+                        'Elixir.ExMedium.MediumUtil.RequestHandler']},
+              {mod,{'Elixir.ExMedium',[]}},
+              {applications,[kernel,stdlib,elixir,logger,httpoison,quantum]}]}.
