@@ -14,6 +14,7 @@ defmodule ExMedium.MediumUtil.RequestHandler do
 
   	"""
 	def getYipyipMedium do
+		IO.inspect @yipyipMediumUrl
 		case HTTPoison.get(@yipyipMediumUrl) do
 			{:ok, response} -> process_response(response)
 			{:error, _response} -> {:error, nil}
