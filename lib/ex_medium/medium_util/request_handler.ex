@@ -5,7 +5,6 @@ defmodule ExMedium.MediumUtil.RequestHandler do
   	Provides a methods to load the get the medium api data, process it and update the state of the `ExMedium.MediumUtil.MediumRegistry`
 
   	"""
-	@yipyipMediumUrl Application.get_env(:ex_medium, :medium_url)
 
 	@doc """
 	HTTPoisen to get Medium Api XML. \n
@@ -14,8 +13,7 @@ defmodule ExMedium.MediumUtil.RequestHandler do
 
   	"""
 	def getYipyipMedium do
-		IO.inspect @yipyipMediumUrl
-		case HTTPoison.get(@yipyipMediumUrl) do
+		case HTTPoison.get(ExMedium.Config.getMediumURl) do
 			{:ok, response} -> process_response(response)
 			{:error, _response} -> {:error, nil}
 		end
