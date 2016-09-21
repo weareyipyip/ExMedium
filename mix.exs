@@ -1,9 +1,9 @@
-defmodule Medium.Mixfile do
+defmodule ExMedium.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :medium,
-     version: "0.1.1",
+    [app: :ex_medium,
+     version: "0.1.2",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -14,9 +14,8 @@ defmodule Medium.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [mod: {Medium, []},
-     applications: [:cowboy, :logger, :gettext,
-                    :timex, :httpoison, :quantum]]
+    [mod: {ExMedium, []},
+     applications: [:logger, :httpoison, :quantum]]
   end
 
   # Dependencies can be Hex packages:
@@ -29,9 +28,7 @@ defmodule Medium.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:gettext, "~> 0.9"},
-     {:timex, "~> 2.1"},
-     {:cowboy, "~> 1.0"},
+    [
      {:httpoison, "~> 0.9.0"},
      {:exml, "~> 0.1.0"},
      {:quantum, "~> 1.7"},
