@@ -1,7 +1,7 @@
 {application,ex_medium,
              [{registered,[]},
               {description,"ex_medium"},
-              {vsn,"0.1.4"},
+              {vsn,"0.1.5"},
               {modules,['Elixir.ExMedium','Elixir.ExMedium.Config',
                         'Elixir.ExMedium.MediumUtil.MediumRegistry',
                         'Elixir.ExMedium.MediumUtil.RequestHandler']},

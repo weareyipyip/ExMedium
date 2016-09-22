@@ -85,7 +85,8 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 	def handle_info(:work, state) do
 	    Logger.info("Running UpdateMediumRegistry Job")
     	ExMedium.MediumUtil.RequestHandler.updateArticles
+    	schedule_work
 	    {:noreply, state}
-	  end
+	 end
 
 end
