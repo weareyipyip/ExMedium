@@ -3,7 +3,7 @@ defmodule ExMedium.Mixfile do
 
   def project do
     [app: :ex_medium,
-     version: "0.1.4",
+     version: "0.1.5",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -15,7 +15,7 @@ defmodule ExMedium.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [mod: {ExMedium, []},
-     applications: [:logger, :httpoison, :quantum]]
+     applications: [:logger, :httpoison]]
   end
 
   # Dependencies can be Hex packages:
@@ -31,7 +31,6 @@ defmodule ExMedium.Mixfile do
     [
      {:httpoison, "~> 0.9.0"},
      {:exml, "~> 0.1.0"},
-     {:quantum, "~> 1.7"},
    ]
   end
 end

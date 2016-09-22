@@ -14,7 +14,8 @@ use Mix.Config
 #
 config :ex_medium, 
 	medium_url: "https://medium.com/feed/we-are-yipyip",
-	root: Path.dirname(__DIR__)
+	root: Path.dirname(__DIR__),
+	interval:  1 * 60 * 60 * 1000
 # And access this configuration in your application as:
 #
 #     Application.get_env(:ex_medium, :key)
@@ -24,14 +25,6 @@ config :ex_medium,
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
-
-config :quantum, cron: [
-  update_medium_registry: [
-    schedule: "*/1 * * * *",
-    task: {ExMedium.Jobs.UpdateMediumRegistry, :run},
-    overlap: false
-  ]
-]
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
