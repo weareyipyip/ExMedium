@@ -15,7 +15,7 @@ defmodule ExMedium.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [mod: {ExMedium, []},
-     applications: [:logger, :httpoison, :quantum]]
+     applications: [:logger, :httpoison]]
   end
 
   # Dependencies can be Hex packages:
@@ -31,7 +31,6 @@ defmodule ExMedium.Mixfile do
     [
      {:httpoison, "~> 0.9.0"},
      {:exml, "~> 0.1.0"},
-     {:quantum, "~> 1.7"},
    ]
   end
 end

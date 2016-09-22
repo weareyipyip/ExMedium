@@ -1,5 +1,6 @@
 defmodule ExMedium.MediumUtil.MediumRegistry do
 	use GenServer
+	require Logger
 	@moduledoc """
   	`Genserver` module, starts registry, keeps state, updates state, lookup state
   	"""
@@ -36,6 +37,13 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
     	GenServer.stop(ExMedium.MediumUtil.MediumRegistry)
   	end
 
+  	@doc """
+	schedule to update registry
+	"""
+  	defp schedule_work do
+		Process.send_after(self(), :work, ExMedium.Config.getInterval)
+	end
+
 	## Server Callbacks
 
 	@doc """
@@ -43,6 +51,7 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 	sets initial state using `ExMedium.MediumUtil.RequestHandler.getYipyipMedium/0'
 	"""
 	def init(:ok) do
+		schedule_work
 		mediumData = ExMedium.MediumUtil.RequestHandler.getYipyipMedium
 		{:ok, mediumData}
 	end
@@ -69,5 +78,14 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 	def handle_cast({:updateMediumArticles, articles}, mediumData) do
 		{:noreply, articles}
 	end
+
+	@doc """
+	executes `ExMedium.MediumUtil.RequestHandler.updateArticles/0` to update state
+	"""
+	def handle_info(:work, state) do
+	    Logger.info("Running UpdateMediumRegistry Job")
+    	ExMedium.MediumUtil.RequestHandler.updateArticles
+	    {:noreply, state}
+	  end
 
 end
