@@ -8,6 +8,7 @@ defmodule ExMedium.MediumUtil.MediumRegistry do
 	## Client API
 	@doc """
 	Starts the registry with the given `name` (we use module name: `ExMedium.MediumUtil.MediumRegistry`)
+	__MODULE__ deffinieert plaats van server callbacks (current moduel)
 	"""
 	def start_link(name) do
 		GenServer.start_link(__MODULE__, :ok, name: name)
