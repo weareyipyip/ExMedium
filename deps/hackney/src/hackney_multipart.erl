@@ -42,7 +42,7 @@
 %% Parts can be under the form:
 %%  - `{file, Path}' : to send a file
 %%  - `{file, Path, ExtraHeaders}' : to send a file with extra headers
-%%  - `{mp_mixed, Name, Boundart}' to send a mixed multipart.
+%%  - `{mp_mixed, Name, Boundary}' to send a mixed multipart.
 %%  - `{mp_mixed_eof, Boundary}': to signal the end of the mixed
 %%  multipart boundary.
 %%  - `{Name, Data}': to send a custom content as a part
@@ -150,7 +150,7 @@ part(Content, Headers, Boundary) ->
 %% Calculated Parts can be under the form:
 %%  - `{file, Path}' : to send a file
 %%  - `{file, Path, ExtraHeaders}' : to send a file with extra headers
-%%  - `{mp_mixed, Name, Boundart}' to send a mixed multipart.
+%%  - `{mp_mixed, Name, Boundary}' to send a mixed multipart.
 %%  multipart boundary.
 %%  - `{Name, DataLen}': to send a custom content as a part
 %%  - `{Name, DataLen, ExtraHeaders}': the same as above but with extra
@@ -268,7 +268,7 @@ mp_data_header({Name, Len, {Disposition, Params}, ExtraHeaders}, Boundary) ->
 unique(Size) -> unique(Size, <<>>).
 unique(0, Acc) -> Acc;
 unique(Size, Acc) ->
-  Random = $a + random:uniform($z - $a),
+  Random = $a + rand:uniform($z - $a),
   unique(Size - 1, <<Acc/binary, Random>>).
 
 decode_form1(eof, [[]|Acc]) ->

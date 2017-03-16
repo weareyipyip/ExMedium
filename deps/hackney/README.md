@@ -2,9 +2,9 @@
 
 # hackney - HTTP client library in Erlang #
 
-Copyright (c) 2012-2016 Benoît Chesneau.
+Copyright (c) 2012-2017 Benoît Chesneau.
 
-__Version:__ 1.6.1
+__Version:__ 1.7.1
 
 # hackney
 
@@ -172,6 +172,8 @@ read_body(MaxLength, Ref, Acc) when MaxLength > byte_size(Acc) ->
 > Note: you can also fetch a multipart response using the functions
 > `hackney:stream_multipart/1` and  `hackney:skip_multipart/1`.
 
+> Note 2: using the `with_body` option will return the body directy instead of a reference.
+
 ### Reuse a connection
 
 By default all connections are created and closed dynamically by
@@ -185,7 +187,7 @@ couple of requests.
 
 ```erlang
 
-Transport = hackney_tcp_transport,
+Transport = hackney_tcp,
 Host = << "https://friendpaste.com" >>,
 Port = 443,
 Options = [],
@@ -214,7 +216,7 @@ NextReq = {NextMethod, NextPath, ReqHeaders, ReqBody}
 Here we are posting a JSON payload to '/' on the friendpaste service to
 create a paste. Then we close the client connection.
 
-> If your connection supports keepalive the connection will be simply :
+> If your connection supports keepalive the connection will be kept open until you close it exclusively.
 
 ### Send a body
 
@@ -222,7 +224,7 @@ hackney helps you send different payloads by passing different terms as
 the request body:
 
 - `{form, PropList}` : To send a form
-- `{multipart, Parts}` : to send you body using the multipart API. Parts
+- `{multipart, Parts}` : to send your body using the multipart API. Parts
   follow this format:
   - `eof`: end the multipart request
   - `{file, Path}`: to stream a file
@@ -316,7 +318,7 @@ LoopFun(LoopFun, ClientRef).
 > synchronously using the function `hackney:stop_async/1` See the
 > example [test_async_once2](https://github.com/benoitc/hackney/blob/master/examples/test_async_once2.erl) for the usage.
 
-> **Note 4**:  When the option `{following_redirect, true}` is passed to
+> **Note 4**:  When the option `{follow_redirect, true}` is passed to
 > the request, you will receive the folllowing messages on valid
 > redirection:
 > - `{redirect, To, Headers}`
@@ -443,7 +445,7 @@ API matching that of the hackney metrics module.
 To  use [folsom](https://github.com/boundary/folsom), specify `{mod_metrics,
 folsom}`, or if you want to use
 [exometer](https://github.com/feuerlabs/exometer), specify`{mod_metrics,
-exometers}` and ensure that folsom or exometer is in your code path and has
+exometer}` and ensure that folsom or exometer is in your code path and has
 been started.
 
 #### Generic Hackney metrics
@@ -525,8 +527,10 @@ $ kill `cat httpbin.pid`
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_cookie.md" class="module">hackney_cookie</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_date.md" class="module">hackney_date</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_headers.md" class="module">hackney_headers</a></td></tr>
+<tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_headers_new.md" class="module">hackney_headers_new</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_http.md" class="module">hackney_http</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_http_connect.md" class="module">hackney_http_connect</a></td></tr>
+<tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_local_tcp.md" class="module">hackney_local_tcp</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_manager.md" class="module">hackney_manager</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_multipart.md" class="module">hackney_multipart</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_pool.md" class="module">hackney_pool</a></td></tr>
@@ -534,10 +538,10 @@ $ kill `cat httpbin.pid`
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_request.md" class="module">hackney_request</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_response.md" class="module">hackney_response</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_socks5.md" class="module">hackney_socks5</a></td></tr>
-<tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_ssl_transport.md" class="module">hackney_ssl_transport</a></td></tr>
+<tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_ssl.md" class="module">hackney_ssl</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_stream.md" class="module">hackney_stream</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_sup.md" class="module">hackney_sup</a></td></tr>
-<tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_tcp_transport.md" class="module">hackney_tcp_transport</a></td></tr>
+<tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_tcp.md" class="module">hackney_tcp</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_trace.md" class="module">hackney_trace</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_url.md" class="module">hackney_url</a></td></tr>
 <tr><td><a href="http://github.com/benoitc/hackney/blob/master/doc/hackney_util.md" class="module">hackney_util</a></td></tr></table>

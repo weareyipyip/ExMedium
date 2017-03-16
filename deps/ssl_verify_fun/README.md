@@ -1,6 +1,10 @@
-# SSL verification for Erlang [![Build Status](https://travis-ci.org/deadtrickster/ssl_verify_fun.erl.svg?branch=master)](https://travis-ci.org/deadtrickster/ssl_verify_fun.erl)
+# SSL verification for Erlang [![Build Status](https://travis-ci.org/deadtrickster/ssl_verify_fun.erl.svg?branch=master)](https://travis-ci.org/deadtrickster/ssl_verify_fun.erl) [![Hex.pm](https://img.shields.io/hexpm/v/ssl_verify_fun.svg?maxAge=2592000)](https://hex.pm/packages/ssl_verify_fun)
 
-## Certificate fingerprint validation
+* [Fingerprint validation](#certificate-fingerprint-validation--pinning)
+* [Public Key validation](#public-key-validation--pinning)
+* [Hostname validation](#hostname-validation)
+
+## Certificate fingerprint validation / pinning
 
 ```erlang
 1> ssl:connect("github.com", 443, [{verify_fun,
@@ -10,7 +14,7 @@
 {ok,{sslsocket,{gen_tcp,#Port<0.1499>,tls_connection,
                         undefined},
                <0.53.0>}}
-               
+
 2> ssl:connect("google.com", 443, [{verify_fun,
 				 {fun ssl_verify_fingerprint:verify_fun/3,
 				  [{check_fingerprint, {sha, "D79F076110B39293E349AC89845B0380C19E2F8B"} }]}},
@@ -20,6 +24,58 @@ SSL: certify: ssl_handshake.erl:1492:Fatal error: handshake failure
 {error,{tls_alert,"handshake failure"}}
 
 ```
+
+## Public Key validation / pinning
+We can pin public key using its hex or base64 representation as well as fingerprint
+
+Using github.com as example lets extract public key
+```
+openssl x509 -inform DER  -pubkey -noout -in /tmp/github.com.der
+
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA54hc8pZclxgcupjiA/F/
+OZGRwm/ZlucoQGTNTKmBEgNsrn/mxhngWmPwbAvUaLP//T79Jc+1WXMpxMiz9PK6
+yZRRFuIo0d2bx423NA6hOL2RTtbnfs+y0PFS/YTpQSelTuq+Fuwts5v6aAweNyMc
+YD0HBybkkdosFoDccBNzJ92Ac8I5EVDUc3Or/4jSyZwzxu9kdmBlBzeHMvsqdH8S
+X9mNahXtXxRpwZnBiUjw36PgN+s9GLWGrafd02T0ux9Yzd5ezkMxukqEAQ7AKIIi
+jvaWPAJbK/52XLhIy2vpGNylyni/DQD18bBPT+ZG1uv0QQP9LuY/joO+FKDOTler
+4wIDAQAB
+-----END PUBLIC KEY-----
+```
+Openssl prints public key encoded using base64 format. It can be used like that:
+
+```erlang
+ssl:connect("github.com", 443, [{verify_fun,
+                                {fun ssl_verify_pk:verify_fun/3,
+                                 [{check_pk, {base64,
+                                              "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA54hc8pZclxgcupjiA/F/"++
+                                              "OZGRwm/ZlucoQGTNTKmBEgNsrn/mxhngWmPwbAvUaLP//T79Jc+1WXMpxMiz9PK6"++
+                                              "yZRRFuIo0d2bx423NA6hOL2RTtbnfs+y0PFS/YTpQSelTuq+Fuwts5v6aAweNyMc"++
+                                              "YD0HBybkkdosFoDccBNzJ92Ac8I5EVDUc3Or/4jSyZwzxu9kdmBlBzeHMvsqdH8S"++
+                                              "X9mNahXtXxRpwZnBiUjw36PgN+s9GLWGrafd02T0ux9Yzd5ezkMxukqEAQ7AKIIi"++
+                                              "jvaWPAJbK/52XLhIy2vpGNylyni/DQD18bBPT+ZG1uv0QQP9LuY/joO+FKDOTler"++
+                                              "4wIDAQAB" } }]}},
+                                {verify, verify_none}]).      
+{ok,{sslsocket,{gen_tcp,#Port<0.2167>,tls_connection,
+                        undefined},
+               <0.60.0>}}
+```
+
+If you don't want to expose public ceritificate or just want to save space,
+you can validate public key fingerprint.
+![Ubuntu der viewer](http://i.imgur.com/QMolOXV.png)
+
+```erlang
+ssl:connect("github.com", 443, [{verify_fun,
+                                {fun ssl_verify_pk:verify_fun/3,
+                                 [{check_pk, {sha,
+                                              "D4EE9D2A6712B3614C272D158B04FCC8CA08A0B6" } }]}},
+                                {verify, verify_none}]).
+{ok,{sslsocket,{gen_tcp,#Port<0.2744>,tls_connection,
+	                      undefined},
+               <0.73.0>}}
+```
+As you can see I just copy-pasted Key SHA1 Fingerprint value and removed spaces. It's that easy!
 
 ## Hostname validation
 
@@ -66,10 +122,10 @@ Excerpt from RFC (http://tools.ietf.org/html/rfc6125)
    domain name portion of an identifier of type DNS-ID, SRV-ID, or
    URI-ID, as described under Section 6.4.1, Section 6.4.2, and
    Section 6.4.3.
-   
+
 ```
 
-###Usage###
+####Usage###
 
 * With SSL lib or HTTP client you can use provided verify_fun/3, do not forget to add `check_hostname` key to user state:
 
@@ -87,12 +143,12 @@ ssl:connect("tv.eurosport.com", 443, [{verify_fun, {fun ssl_verify_hostname:veri
 {ok,{sslsocket,{gen_tcp,#Port<0.1565>,tls_connection,
                         undefined},
                         <0.53.0>}}
-                        
+
 ```
 
 Unfortunately as you can see OTP SSL error reporting not so informative (in fact it ignores everything user-provided verify_fun returns as failure reason (8 October 2014))
 
-``` erlang 
+``` erlang
 path_validation_alert(Reason) ->
     ?ALERT_REC(?FATAL, ?HANDSHAKE_FAILURE).
 ```

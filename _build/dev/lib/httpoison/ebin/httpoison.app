@@ -1,7 +1,5 @@
 {application,httpoison,
-             [{registered,[]},
-              {description,"  Yet Another HTTP client for Elixir powered by hackney\n"},
-              {vsn,"0.9.1"},
+             [{description,"  Yet Another HTTP client for Elixir powered by hackney\n"},
               {modules,['Elixir.HTTPoison','Elixir.HTTPoison.AsyncChunk',
                         'Elixir.HTTPoison.AsyncEnd',
                         'Elixir.HTTPoison.AsyncHeaders',
@@ -10,4 +8,6 @@
                         'Elixir.HTTPoison.AsyncStatus',
                         'Elixir.HTTPoison.Base','Elixir.HTTPoison.Error',
                         'Elixir.HTTPoison.Response']},
+              {registered,[]},
+              {vsn,"0.11.1"},
               {applications,[kernel,stdlib,elixir,hackney]}]}.
