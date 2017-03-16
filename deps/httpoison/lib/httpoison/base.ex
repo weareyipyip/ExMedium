@@ -11,7 +11,7 @@ defmodule HTTPoison.Base do
 
         @endpoint "https://api.github.com"
 
-        defp process_url(url) do
+        def process_url(url) do
           @endpoint <> url
         end
       end
@@ -33,37 +33,42 @@ defmodule HTTPoison.Base do
       # Called in order to process the url passed to any request method before
       # actually issuing the request.
       @spec process_url(binary) :: binary
-      defp process_url(url)
+      def process_url(url)
 
       # Called to arbitrarily process the request body before sending it with the
       # request.
       @spec process_request_body(term) :: binary
-      defp process_request_body(body)
+      def process_request_body(body)
 
       # Called to arbitrarily process the request headers before sending them
       # with the request.
       @spec process_request_headers(term) :: [{binary, term}]
-      defp process_request_headers(headers)
+      def process_request_headers(headers)
+
+      # Called to arbitrarily process the request options before sending them
+      # with the request.
+      @spec process_request_options(keyword) :: keyword
+      def process_request_options(options)
 
       # Called before returning the response body returned by a request to the
       # caller.
       @spec process_response_body(binary) :: term
-      defp process_response_body(body)
+      def process_response_body(body)
 
       # Used when an async request is made; it's called on each chunk that gets
       # streamed before returning it to the streaming destination.
       @spec process_response_chunk(binary) :: term
-      defp process_response_chunk(chunk)
+      def process_response_chunk(chunk)
 
       # Called to process the response headers before returning them to the
       # caller.
       @spec process_headers([{binary, term}]) :: term
-      defp process_headers(headers)
+      def process_headers(headers)
 
       # Used to arbitrarily process the status code of a response before
       # returning it to the caller.
       @spec process_status_code(integer) :: term
-      defp process_status_code(status_code)
+      def process_status_code(status_code)
 
   """
 
@@ -81,24 +86,26 @@ defmodule HTTPoison.Base do
       """
       def start, do: :application.ensure_all_started(:httpoison)
 
-      defp process_url(url) do
+      def process_url(url) do
         HTTPoison.Base.default_process_url(url)
       end
 
-      defp process_request_body(body), do: body
+      def process_request_body(body), do: body
 
-      defp process_response_body(body), do: body
+      def process_response_body(body), do: body
 
-      defp process_request_headers(headers) when is_map(headers) do
+      def process_request_headers(headers) when is_map(headers) do
         Enum.into(headers, [])
       end
-      defp process_request_headers(headers), do: headers
+      def process_request_headers(headers), do: headers
 
-      defp process_response_chunk(chunk), do: chunk
+      def process_request_options(options), do: options
 
-      defp process_headers(headers), do: headers
+      def process_response_chunk(chunk), do: chunk
 
-      defp process_status_code(status_code), do: status_code
+      def process_headers(headers), do: headers
+
+      def process_status_code(status_code), do: status_code
 
       @doc false
       @spec transformer(pid) :: :ok
@@ -123,13 +130,15 @@ defmodule HTTPoison.Base do
         * binary, char list or an iolist
         * `{:form, [{K, V}, ...]}` - send a form url encoded
         * `{:file, "/path/to/file"}` - send a file
+        * `{:stream, enumerable}` - lazily send a stream of binaries/charlists
 
       Options:
         * `:timeout` - timeout to establish a connection, in milliseconds. Default is 8000
         * `:recv_timeout` - timeout used when receiving a connection. Default is 5000
         * `:stream_to` - a PID to stream the response to
+        * `:async` - if given `:once`, will only stream one message at a time, requires call to `stream_next`
         * `:proxy` - a proxy to be used for the request; it can be a regular url
-          or a `{Host, Proxy}` tuple
+          or a `{Host, Port}` tuple
         * `:proxy_auth` - proxy authentication `{User, Password}` tuple
         * `:ssl` - SSL options supported by the `ssl` erlang module
         * `:follow_redirect` - a boolean that causes redirects to be followed
@@ -149,6 +158,7 @@ defmodule HTTPoison.Base do
       @spec request(atom, binary, body, headers, Keyword.t) :: {:ok, Response.t | AsyncResponse.t}
         | {:error, Error.t}
       def request(method, url, body \\ "", headers \\ [], options \\ []) do
+        options = process_request_options(options)
         url =
         if Keyword.has_key?(options, :params) do
           url <> "?" <> URI.encode_query(options[:params])
@@ -173,7 +183,7 @@ defmodule HTTPoison.Base do
       def request!(method, url, body \\ "", headers \\ [], options \\ []) do
         case request(method, url, body, headers, options) do
           {:ok, response} -> response
-          {:error, error} -> raise error
+          {:error, %Error{reason: reason}} -> raise Error, reason: reason
         end
       end
 
@@ -208,7 +218,7 @@ defmodule HTTPoison.Base do
       See `request/5` for more detailed information.
       """
       @spec put(binary, body, headers, Keyword.t) :: {:ok, Response.t | AsyncResponse.t } | {:error, Error.t}
-      def put(url, body, headers \\ [], options \\ []),    do: request(:put, url, body, headers, options)
+      def put(url, body \\ "", headers \\ [], options \\ []),    do: request(:put, url, body, headers, options)
 
       @doc """
       Issues a PUT request to the given url, raising an exception in case of
@@ -218,8 +228,8 @@ defmodule HTTPoison.Base do
 
       See `request!/5` for more detailed information.
       """
-      @spec put!(binary, body, headers, Keyword.t) :: Response.t | AsyncResponse.t
-      def put!(url, body, headers \\ [], options \\ []),   do: request!(:put, url, body, headers, options)
+      @spec put!(binary, body, Keyword.t) :: Response.t | AsyncResponse.t
+      def put!(url, body \\ "", headers \\ [], options \\ []),   do: request!(:put, url, body, headers, options)
 
       @doc """
       Issues a HEAD request to the given url.
@@ -331,6 +341,19 @@ defmodule HTTPoison.Base do
       @spec options!(binary, headers, Keyword.t) :: Response.t | AsyncResponse.t
       def options!(url, headers \\ [], options \\ []),     do: request!(:options, url, "", headers, options)
 
+      @doc """
+      Requests the next message to be streamed for a given `HTTPoison.AsyncResponse`.
+
+      See `request!/5` for more detailed information.
+      """
+      @spec stream_next(AsyncResponse.t) :: {:ok, AsyncResponse.t} | {:error, Error.t}
+      def stream_next(resp = %AsyncResponse{ id: id }) do
+        case :hackney.stream_next(id) do
+          :ok -> {:ok, resp}
+          err -> {:error, %Error{reason: "stream_next/1 failed", id: id}}
+        end
+      end
+
       defoverridable Module.definitions_in(__MODULE__)
     end
   end
@@ -358,9 +381,10 @@ defmodule HTTPoison.Base do
 
   @doc false
   def default_process_url(url) do
-    case url |> String.slice(0, 8) |> String.downcase do
+    case url |> String.slice(0, 12) |> String.downcase do
       "http://" <> _ -> url
       "https://" <> _ -> url
+      "http+unix://" <> _ -> url
       _ -> "http://" <> url
     end
   end
@@ -369,6 +393,7 @@ defmodule HTTPoison.Base do
     timeout = Keyword.get options, :timeout
     recv_timeout = Keyword.get options, :recv_timeout
     stream_to = Keyword.get options, :stream_to
+    async = Keyword.get options, :async
     proxy = Keyword.get options, :proxy
     proxy_auth = Keyword.get options, :proxy_auth
     ssl = Keyword.get options, :ssl
@@ -387,7 +412,11 @@ defmodule HTTPoison.Base do
 
     hn_options =
       if stream_to do
-        [:async, {:stream_to, spawn(module, :transformer, [stream_to])} | hn_options]
+        async_option = case async do
+          nil   -> :async
+          :once -> {:async, :once}
+        end
+        [async_option, {:stream_to, spawn(module, :transformer, [stream_to])} | hn_options]
       else
         hn_options
       end
@@ -395,34 +424,44 @@ defmodule HTTPoison.Base do
     hn_options
   end
 
+
   @doc false
   def request(module, method, request_url, request_body, request_headers, options, process_status_code, process_headers, process_response_body) do
     hn_options = build_hackney_options(module, options)
 
-    case make_request(method, request_url, request_headers, request_body, hn_options) do
-      {:ok, {status_code, headers, body}} ->
-        response(process_status_code, process_headers, process_response_body, status_code, headers, body)
-      {:ok, _ } = async -> async
-      {:error, _} = error -> error
+    case do_request(method, request_url, request_headers, request_body, hn_options) do
+      {:ok, status_code, headers} -> response(process_status_code, process_headers, process_response_body, status_code, headers, "")
+      {:ok, status_code, headers, client} ->
+        case :hackney.body(client) do
+          {:ok, body} -> response(process_status_code, process_headers, process_response_body, status_code, headers, body)
+          {:error, reason} -> {:error, %Error{reason: reason} }
+        end
+      {:ok, id} -> { :ok, %HTTPoison.AsyncResponse{ id: id } }
+      {:error, reason} -> {:error, %Error{reason: reason}}
+     end
+  end
+
+  defp do_request(method, request_url, request_headers, {:stream, enumerable}, hn_options) do
+    with {:ok, ref} <- :hackney.request(method, request_url, request_headers, :stream, hn_options) do
+
+      failures = Stream.transform(enumerable, :ok, fn
+        _, :error -> {:halt, :error}
+        bin, :ok  -> {[], :hackney.send_body(ref, bin)}
+        _, error  -> {[error], :error}
+      end) |> Enum.into([])
+
+      case failures do
+        [] ->
+          :hackney.start_response(ref)
+        [failure] ->
+          failure
+      end
     end
   end
 
-  defp make_request(method, request_url, request_headers, request_body, hn_options) do
-    try do
-      case :hackney.request(method, request_url, request_headers,
-            request_body, hn_options) do
-        {:ok, status_code, headers} -> {:ok, {status_code, headers, ""}}
-        {:ok, status_code, headers, client} ->
-          case :hackney.body(client) do
-            {:ok, body} -> {:ok, {status_code, headers, body}}
-            {:error, reason} -> {:error, %Error{reason: reason} }
-          end
-        {:ok, id} -> { :ok, %HTTPoison.AsyncResponse{ id: id } }
-        {:error, reason} -> {:error, %Error{reason: reason}}
-      end
-    catch
-      _, reason -> {:error, %Error{reason: reason}}
-    end
+  defp do_request(method, request_url, request_headers, request_body, hn_options) do
+    :hackney.request(method, request_url, request_headers,
+                          request_body, hn_options)
   end
 
   defp response(process_status_code, process_headers, process_response_body, status_code, headers, body) do
