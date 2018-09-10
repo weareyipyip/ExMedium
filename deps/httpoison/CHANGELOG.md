@@ -1,5 +1,56 @@
 # Changelog
 
+# 1.3.0 (2018-08-26)
+
+* Add Multipart body helper
+* Fix issue with empty `HTTP_PROXY`
+* Update Docs
+* Fix incorrect typespec on request/5
+
+# 1.2.0 (2018-06-16)
+
+* HTTPoison.Base behaviour #330
+* mix format #332
+* Bump Elixir requirement to `~> 1.5`
+
+# 1.1.1 (2018-04-20)
+
+* Add support for socks5 user and pass parameters #323 #325 Thanks, @skie :tada:
+
+# 1.1.0 (2018-04-02)
+
+* Automatic use of `HTTP_PROXY` env var #306 Thanks to @amencarini
+
+# 1.0.0 (2018-01-07)
+
+* Fix @specs #288 #304 #289 Thanks to @jknipp, @jeffrom & @amclain
+
+# 0.13.0 (2017-08-04)
+
+* Relax hackney requirement (#277). Thanks to @tverlaan
+
+# 0.12.0 (2017-06-29)
+
+* Change HTTPoison transformer to always `spawn_link` (#260)
+* Add `request_url` to `HTTPoison.Response` (#270)
+
+# 0.11.2 (2017-04-23)
+
+* Bump hackney version requirement (#244). Thanks @jakehasler
+* Add support to encode URLs containing a query string (#223). Thanks @jadlr
+
+# 0.11.1 (2017-03-02)
+
+* Add `process_request_options` (#208). Thanks to @drewolson
+* Bump hackney to `~> 1.7.0` (#228). Thanks to @xinz
+* Change typespec of `Response.body` (#220). Thanks to @deepblue
+* Add test for a GET request (#219). Thanks to @Lokeh
+
+# 0.11.0 (2017-01-08)
+
+* Add `{:stream, enumerable}` body option (#194). Thanks to @rozap :tada:;
+* Change overridable functions to be public (#201). Thanks to @paulswartz :tada:;
+
 # 0.10.0 (2016-11-06)
 
 * Add support for http over unix sockets - requires hackney >= 1.6.3, erlang >= 19. (#185).

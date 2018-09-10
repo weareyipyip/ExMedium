@@ -1,5 +1,5 @@
 defmodule HTTPoison.Response do
-  defstruct status_code: nil, body: nil, headers: []
+  defstruct status_code: nil, body: nil, headers: [], request_url: nil
   @type t :: %__MODULE__{status_code: integer, body: term, headers: list}
 end
 
@@ -25,7 +25,7 @@ end
 
 defmodule HTTPoison.AsyncRedirect do
   defstruct id: nil, to: nil, headers: []
-  @type t :: %__MODULE__{id: reference, to: String.t, headers: list}
+  @type t :: %__MODULE__{id: reference, to: String.t(), headers: list}
 end
 
 defmodule HTTPoison.AsyncEnd do
@@ -35,10 +35,10 @@ end
 
 defmodule HTTPoison.Error do
   defexception reason: nil, id: nil
-  @type t :: %__MODULE__{id: reference, reason: any}
+  @type t :: %__MODULE__{id: reference | nil, reason: any}
 
   def message(%__MODULE__{reason: reason, id: nil}), do: inspect(reason)
-  def message(%__MODULE__{reason: reason, id: id}), do: "[Reference: #{id}] - #{inspect reason}"
+  def message(%__MODULE__{reason: reason, id: id}), do: "[Reference: #{id}] - #{inspect(reason)}"
 end
 
 defmodule HTTPoison do

@@ -5,7 +5,7 @@ HTTP client for Elixir, based on
 [HTTPotion](https://github.com/myfreeweb/httpotion)
 ([documentation](http://hexdocs.pm/httpoison/)).
 
-##Note about broken ssl in Erlang 19
+## Note about broken ssl in Erlang 19
 Until this [issue](https://bugs.erlang.org/browse/ERL-192) is fixed ssl handshakes may fail. If you receive this error:
 ```
 {:error, %HTTPoison.Error{id: nil, reason: :closed}}
@@ -27,24 +27,16 @@ First, add HTTPoison to your `mix.exs` dependencies:
 
 ```elixir
 def deps do
-  [{:httpoison, "~> 0.10.0"}]
+  [{:httpoison, "~> 1.0"}]
 end
 ```
 
-and run `$ mix deps.get`. Now, list the `:httpoison` application as your
-application dependency:
+and run `$ mix deps.get`. Add `:httpoison` to your applications list if your Elixir version is 1.3 or lower:
 
 ```elixir
 def application do
   [applications: [:httpoison]]
 end
-```
-
-### If you're on Ubuntu
-Make sure you have `erlang-dev` installed before using `httpoison`.
-You can do so by running:
-```sh
-apt-get install erlang-dev
 ```
 
 ## Usage
@@ -86,7 +78,7 @@ end
 ```
 ### Options
 
-There are a number of supported options(*not to be confused with the HTTP options method*), documented [here](https://hexdocs.pm/httpoison/HTTPoison.html#options/3), that can be added to your request. The example below shows the use of the `:ssl` and `:recv_timeout` options for a post request to an api that requires a bearer token. The `:ssl` option allows you to set options accepted by th [Erlang SSL module](http://erlang.org/doc/man/ssl.html), and `:recv_timeout` sets a timeout on receiving a response, the default is 5000ms.
+There are a number of supported options(*not to be confused with the HTTP options method*), documented [here](https://hexdocs.pm/httpoison/HTTPoison.html#request/5), that can be added to your request. The example below shows the use of the `:ssl` and `:recv_timeout` options for a post request to an api that requires a bearer token. The `:ssl` option allows you to set options accepted by th [Erlang SSL module](http://erlang.org/doc/man/ssl.html), and `:recv_timeout` sets a timeout on receiving a response, the default is 5000ms.
 
 ```elixir
 token = "some_token_from_another_request"
@@ -94,6 +86,14 @@ url = "https://example.com/api/endpoint_that_needs_a_bearer_token"
 headers = ["Authorization": "Bearer #{token}", "Accept": "Application/json; Charset=utf-8"]
 options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 500]
 {:ok, response} = HTTPoison.get(url, headers, options)
+```
+
+And the example below shows the use of the `:ssl` options for a post request to an api that requires a client certification.
+
+```elixir
+url = "https://example.org/api/endpoint_that_needs_client_cert"
+options = [ssl: [certfile: "certs/client.crt"]]
+{:ok, response} = HTTPoison.post(url, [], options)
 ```
 
 ### Wrapping `HTTPoison.Base`
@@ -173,6 +173,11 @@ iex> flush
 :ok
 ```
 
+**Warning: this option can flood a receiver in messages.**
+
+If a server may send very large messages the `async: :once` option should be used.
+This will send only a single chunk at a time the receiver can call `HTTPoison.stream_next/1` to indicate ability to process more chunks. 
+
 ### Cookies
 
 HTTPoison allows you to send cookies:
@@ -188,7 +193,7 @@ You can also receive cookies from the server by reading the `"set-cookie"` heade
 
 ```elixir
 iex(1)> response = HTTPoison.get!("http://httparrot.herokuapp.com/cookies/set?foo=1")
-iex(2)> cookies = Enum.filter(response.headers, fn       
+iex(2)> cookies = Enum.filter(response.headers, fn
 ...(2)> {"Set-Cookie", _} -> true
 ...(2)> _ -> false
 ...(2)> end)
@@ -243,6 +248,46 @@ children = [
 
 Add that to the application supervisor and `first_pool` will be available to be used by HTTPoison/hackney.
 
+### Multipart
+
+#### Request
+
+HTTPoison supports making `multipart` requests. E.g.:
+
+```elixir
+HTTPoison.post("https://myurl.php", {:multipart, [{:file, "test.txt", {"form-data", [{"name", "mytest"}, {"filename", "test.txt"}]}, []}]})
+```
+
+Further examples of `multipart` requests can be found [in the issues](https://github.com/edgurgel/httpoison/issues?utf8=%E2%9C%93&q=is%3Aissue+multipart) (e.g.: [here](https://github.com/edgurgel/httpoison/issues/144#issue-160035453) and [here](https://github.com/edgurgel/httpoison/issues/237#issuecomment-313132804)).
+
+For more complex queries regarding multipart requests, you should follow the [hackney docs for the `multipart` API](https://github.com/benoitc/hackney#send-a-body).
+
+#### Response
+
+HTTPoison supports parsing `multipart` responses. E.g.:
+
+```elixir
+iex(1)> response = %HTTPoison.Response{
+...(1)>   body: "--123\r\nContent-type: application/json\r\n\r\n{\"1\": \"first\"}\r\n--123\r\nContent-type: application/json\r\n\r\n{\"2\": \"second\"}\r\n--123--\r\n",
+...(1)>   headers: [{"Content-Type", "multipart/mixed;boundary=123"}],
+...(1)>   request_url: "http://localhost",
+...(1)>   status_code: 200
+...(1)> }
+%HTTPoison.Response{
+  body: "--123\r\nContent-type: application/json\r\n\r\n{\"1\": \"first\"}\r\n--123\r\nContent-type: application/json\r\n\r\n{\"2\": \"second\"}\r\n--123--\r\n",
+  headers: [{"Content-Type", "multipart/mixed;boundary=123"}],
+  request_url: "http://localhost",
+  status_code: 200
+}
+
+iex(2)> HTTPoison.Handlers.Multipart.decode_body(response)
+[
+  {[{"Content-Type", "application/json"}], "{\"1\": \"first\"}"},
+  {[{"Content-Type", "application/json"}], "{\"2\": \"second\"}"}
+]
+```
+
+For more complex queries regarding multipart response parsing, you should follow the [hackney docs for the `hackney_multipart` API](https://github.com/benoitc/hackney/blob/master/doc/hackney_multipart.md).
 
 ## License
 

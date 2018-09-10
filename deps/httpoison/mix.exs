@@ -6,14 +6,24 @@ defmodule HTTPoison.Mixfile do
   """
 
   def project do
-    [ app: :httpoison,
-      version: "0.11.1",
-      elixir: "~> 1.2",
+    [
+      app: :httpoison,
+      version: "1.3.0",
+      elixir: "~> 1.5",
       name: "HTTPoison",
       description: @description,
       package: package(),
       deps: deps(),
-      source_url: "https://github.com/edgurgel/httpoison" ]
+      source_url: "https://github.com/edgurgel/httpoison",
+      docs: [
+        main: "readme",
+        logo: "logo.png",
+        extras: [
+          "README.md",
+          "CHANGELOG.md"
+        ]
+      ]
+    ]
   end
 
   def application do
@@ -22,18 +32,23 @@ defmodule HTTPoison.Mixfile do
 
   defp deps do
     [
-      {:hackney, "~> 1.7.0"},
+      {:hackney, "~> 1.8"},
       {:exjsx, "~> 3.1", only: :test},
-      {:httparrot, "~> 0.5", only: :test},
+      {:httparrot, "~> 1.0", only: :test},
       {:meck, "~> 0.8.2", only: :test},
       {:earmark, "~> 1.0", only: :dev},
-      {:ex_doc, "~> 0.14.3", only: :dev},
+      {:ex_doc, "~> 0.14", only: :dev}
     ]
   end
 
   defp package do
-    [ maintainers: ["Eduardo Gurgel Pinho"],
+    [
+      maintainers: ["Eduardo Gurgel Pinho"],
       licenses: ["MIT"],
-      links: %{"Github" => "https://github.com/edgurgel/httpoison"} ]
+      links: %{
+        Changelog: "https://github.com/edgurgel/httpoison/blob/master/CHANGELOG.md",
+        GitHub: "https://github.com/edgurgel/httpoison"
+      }
+    ]
   end
 end
