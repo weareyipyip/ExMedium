@@ -3,7 +3,7 @@ defmodule ExMedium.Mixfile do
 
   def project do
     [app: :ex_medium,
-     version: "0.1.7",
+     version: "0.1.8",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -29,7 +29,7 @@ defmodule ExMedium.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-     {:httpoison, "~> 0.11.1"},
+     {:httpoison, "~> 1.3.0"},
      {:exml, "~> 0.1.0"},
    ]
   end

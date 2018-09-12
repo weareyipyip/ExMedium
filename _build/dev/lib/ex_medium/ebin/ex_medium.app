@@ -1,9 +1,0 @@
-{application,ex_medium,
-             [{description,"ex_medium"},
-              {modules,['Elixir.ExMedium','Elixir.ExMedium.Config',
-                        'Elixir.ExMedium.MediumUtil.MediumRegistry',
-                        'Elixir.ExMedium.MediumUtil.RequestHandler']},
-              {registered,[]},
-              {vsn,"0.1.6"},
-              {mod,{'Elixir.ExMedium',[]}},
-              {applications,[kernel,stdlib,elixir,logger,httpoison]}]}.
